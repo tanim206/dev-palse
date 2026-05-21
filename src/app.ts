@@ -5,6 +5,7 @@ import express, {
 } from "express";
 import globalErrorHandler from "./middleware/globalErrorHandler";
 import { authRoute } from "./modules/auth/auth.route";
+import { issueRoute } from "./modules/issues/issues.route";
 
 const app: Application = express();
 
@@ -19,6 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/auth", authRoute);
+app.use("/api/issues", issueRoute);
 
 app.use(globalErrorHandler);
 

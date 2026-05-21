@@ -6,6 +6,7 @@ dotenv.config({ quiet: true });
 const config = {
   port: env.PORT,
   connect_string: env.CONNECTIONSTRING,
+  secretKey: env.SECRET_KEY,
 };
 
 export default config;
