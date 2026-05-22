@@ -7,7 +7,7 @@ const createIssue = async (req: Request, res: Response) => {
 
   const issue = await issueService.createIssueIntoDB({
     ...req.body,
-    reporter_id: user.id,
+    reporter_id: user?.id ?? req.body.reporter_id ?? null,
   });
 
   res.status(201).json({
