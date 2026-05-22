@@ -7,7 +7,7 @@ const main = async () => {
   try {
     await dataBase();
     server.listen(config.port, () => {
-      console.log(`Server is running at ${config.port}`);
+      console.log(`Server is running at  http://localhost:${config.port}`);
     });
   } catch (error) {
     console.error(
@@ -17,5 +17,4 @@ const main = async () => {
     process.exit(1);
   }
 };
-
 main();
