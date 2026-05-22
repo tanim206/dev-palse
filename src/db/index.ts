@@ -7,7 +7,6 @@ export const pool = new Pool({
 
 export const dataBase = async () => {
   try {
-    // ১. ইউজার টেবিল তৈরি (অতিরিক্ত ব্র্যাকেট রিমুভ করা হয়েছে)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -20,7 +19,6 @@ export const dataBase = async () => {
       );
     `);
 
-    //২. ইস্যু টেবিল তৈরি (কমা ফিক্স করা হয়েছে এবং অ্যাসাইনমেন্ট অনুযায়ী REFERENCES বাদ দেওয়া হয়েছে)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS issues (
         id SERIAL PRIMARY KEY,
@@ -34,7 +32,7 @@ export const dataBase = async () => {
       );
     `);
 
-    console.log("Database connected ");
+    console.log("Database connected successfully ");
   } catch (error) {
     console.error("Database initialization failed", error);
   }

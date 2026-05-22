@@ -19,51 +19,7 @@ const createIssueIntoDB = async (payload: IIssue) => {
   return result.rows[0];
 };
 
-// const getAllIssuesFromDB = async (query: any) => {
-//   const { sort = "newest", type, status } = query;
-
-//   let sql = `SELECT * FROM issues`;
-//   const values: any[] = [];
-//   const conditions: string[] = [];
-
-//   let i = 1;
-
-//   if (type) {
-//     conditions.push(`type = $${i++}`);
-//     values.push(type);
-//   }
-
-//   if (status) {
-//     conditions.push(`status = $${i++}`);
-//     values.push(status);
-//   }
-
-//   if (conditions.length) {
-//     sql += ` WHERE ` + conditions.join(" AND ");
-//   }
-
-//   sql +=
-//     sort === "oldest"
-//       ? ` ORDER BY created_at ASC`
-//       : ` ORDER BY created_at DESC`;
-
-//   const issuesRes = await pool.query(sql, values);
-//   const issues = issuesRes.rows;
-
-//   const ids = [...new Set(issues.map((i) => i.reporter_id))];
-
-//   const usersRes = await pool.query(
-//     `SELECT id, name, role FROM users WHERE id = ANY($1)`,
-//     [ids],
-//   );
-
-//   return issues.map((issue) => ({
-//     ...issue,
-//     reporter: usersRes.rows.find((u) => u.id === issue.reporter_id),
-//   }));
-// };
-
-const getAllIssuesFromDB = async (query: any) => {
+const getAllIssuesIntoDB = async (query: any) => {
   const { sort = "newest", type, status } = query;
 
   let sql = `SELECT * FROM issues`;
@@ -95,7 +51,6 @@ const getAllIssuesFromDB = async (query: any) => {
   const issuesRes = await pool.query(sql, values);
   const issues = issuesRes.rows;
 
-  // ✅ SAFE CHECK
   if (!issues.length) {
     return [];
   }
@@ -131,7 +86,7 @@ const getAllIssuesFromDB = async (query: any) => {
   });
 };
 
-const getSingleIssueFromDB = async (id: string) => {
+const getSingleIssueIntoDB = async (id: string) => {
   const issueRes = await pool.query(`SELECT * FROM issues WHERE id=$1`, [id]);
 
   const issue = issueRes.rows[0];
@@ -171,7 +126,7 @@ const getSingleIssueFromDB = async (id: string) => {
 };
 
 const updateIssueIntoDB = async (id: string, payload: any) => {
-  const old = await getSingleIssueFromDB(id);
+  await getSingleIssueIntoDB(id);
 
   const result = await pool.query(
     `
@@ -213,8 +168,8 @@ const deleteIssueFromDB = async (id: string) => {
 
 export const issueService = {
   createIssueIntoDB,
-  getAllIssuesFromDB,
-  getSingleIssueFromDB,
+  getAllIssuesIntoDB,
+  getSingleIssueIntoDB,
   updateIssueIntoDB,
   deleteIssueFromDB,
 };

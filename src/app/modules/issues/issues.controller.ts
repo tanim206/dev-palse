@@ -17,18 +17,8 @@ const createIssue = async (req: Request, res: Response) => {
   });
 };
 
-// const getAllIssues = async (req: Request, res: Response) => {
-//   const data = await issueService.getAllIssuesFromDB(req.query);
-
-//   res.json({
-//     success: true,
-//     data,
-//   });
-
-// };
-
 const getAllIssues = async (req: Request, res: Response) => {
-  const result = await issueService.getAllIssuesFromDB(req.query);
+  const result = await issueService.getAllIssuesIntoDB(req.query);
   return res.status(200).json({
     success: true,
     data: result,
@@ -36,15 +26,11 @@ const getAllIssues = async (req: Request, res: Response) => {
 };
 
 const getSingleIssue = async (req: Request, res: Response) => {
-  const data = await issueService.getSingleIssueFromDB(req.params.id as string);
+  const data = await issueService.getSingleIssueIntoDB(req.params.id as string);
 
   if (!data) {
-    return res.status(404).json({
-      success: false,
-      message: "Issue not found",
-    });
+    return sendResponse(res, false, 404, "Issue not found");
   }
-
   res.json({
     success: true,
     data,
@@ -52,20 +38,15 @@ const getSingleIssue = async (req: Request, res: Response) => {
 };
 
 const updateIssue = async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  await (req as any).user;
 
-  const issue = await issueService.getSingleIssueFromDB(
+  const issue = await issueService.getSingleIssueIntoDB(
     req.params.id as string,
   );
 
   if (!issue) {
-    return res.status(404).json({
-      success: false,
-      message: "Issue not found",
-    });
+    return sendResponse(res, false, 404, "Issue not found");
   }
-
- 
 
   const updated = await issueService.updateIssueIntoDB(
     req.params.id as string,
