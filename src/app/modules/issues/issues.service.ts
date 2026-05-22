@@ -13,7 +13,7 @@ const createIssueIntoDB = async (payload: IIssue) => {
     VALUES ($1,$2,$3,$4,$5)
     RETURNING *
     `,
-    [title, description, type, status || "open", reporter_id],
+    [title, description, type, status || "open", reporter_id ?? null],
   );
 
   return result.rows[0];
@@ -55,7 +55,19 @@ const getAllIssuesIntoDB = async (query: any) => {
     return [];
   }
 
-  const ids = [...new Set(issues.map((i) => i.reporter_id))];
+  const ids = [...new Set(issues.map((i) => i.reporter_id))].filter((id) => id != null);
+
+  if (ids.length === 0) {
+    return issues.map((issue) => {
+      const { id, title, description, type, status, created_at, updated_at } =
+        issue as any;
+      const createTime =
+        created_at instanceof Date ? created_at.toISOString() : created_at;
+      const updateTime =
+        updated_at instanceof Date ? updated_at.toISOString() : updated_at;
+      return { id, title, description, type, status, reporter: null, created_at: createTime, updated_at: updateTime };
+    });
+  }
 
   const usersRes = await pool.query(
     `SELECT id, name, role FROM users WHERE id = ANY($1)`,
@@ -63,8 +75,9 @@ const getAllIssuesIntoDB = async (query: any) => {
   );
 
   return issues.map((issue) => {
-    const reporterObj =
-      usersRes.rows.find((u) => u.id === issue.reporter_id) || null;
+    const reporterObj = issue.reporter_id
+      ? usersRes.rows.find((u) => u.id === issue.reporter_id) || null
+      : null;
     const { id, title, description, type, status, created_at, updated_at } =
       issue as any;
 
@@ -92,12 +105,14 @@ const getSingleIssueIntoDB = async (id: string) => {
   const issue = issueRes.rows[0];
   if (!issue) return null;
 
-  const userRes = await pool.query(
-    `SELECT id,name,role FROM users WHERE id=$1`,
-    [issue.reporter_id],
-  );
-
-  const reporter = userRes.rows[0] || null;
+  let reporter = null;
+  if (issue.reporter_id) {
+    const userRes = await pool.query(
+      `SELECT id,name,role FROM users WHERE id=$1`,
+      [issue.reporter_id],
+    );
+    reporter = userRes.rows[0] || null;
+  }
 
   const {
     reporter_id,

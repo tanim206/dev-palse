@@ -26,7 +26,7 @@ export const dataBase = async () => {
         description TEXT NOT NULL,
         type VARCHAR(20) DEFAULT 'bug',
         status VARCHAR(30) DEFAULT 'open',
-        reporter_id INT NOT NULL,
+        reporter_id INT,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       );
