@@ -13,13 +13,13 @@ app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
-    message: "Hello World!!!",
+    message: "Hello Dev Pulse!",
   });
 });
 
 app.use("/api/auth", authRoute);
 app.use("/api/issues", issueRoute);
 
-app.use(globalErrorHandler); // Global Error Handler Function
+app.use(globalErrorHandler);
 
 export default app;
