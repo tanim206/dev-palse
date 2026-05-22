@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { issueService } from "./issues.service";
+import sendResponse from "../../utils/sendResponse";
 
 const createIssue = async (req: Request, res: Response) => {
   const user = (req as any).user;
@@ -16,21 +17,26 @@ const createIssue = async (req: Request, res: Response) => {
   });
 };
 
-const getAllIssues = async (req: Request, res: Response) => {
-  const data = await issueService.getAllIssuesFromDB(
-    req.query
-  );
+// const getAllIssues = async (req: Request, res: Response) => {
+//   const data = await issueService.getAllIssuesFromDB(req.query);
 
-  res.json({
+//   res.json({
+//     success: true,
+//     data,
+//   });
+
+// };
+
+const getAllIssues = async (req: Request, res: Response) => {
+  const result = await issueService.getAllIssuesFromDB(req.query);
+  return res.status(200).json({
     success: true,
-    data,
+    data: result,
   });
 };
 
 const getSingleIssue = async (req: Request, res: Response) => {
-  const data = await issueService.getSingleIssueFromDB(
-    req.params.id as string
-  );
+  const data = await issueService.getSingleIssueFromDB(req.params.id as string);
 
   if (!data) {
     return res.status(404).json({
@@ -49,7 +55,7 @@ const updateIssue = async (req: Request, res: Response) => {
   const user = (req as any).user;
 
   const issue = await issueService.getSingleIssueFromDB(
-    req.params.id as string
+    req.params.id as string,
   );
 
   if (!issue) {
@@ -59,23 +65,12 @@ const updateIssue = async (req: Request, res: Response) => {
     });
   }
 
-  if (
-    user.role === "contributor" &&
-    (issue.reporter_id !== user.id ||
-      issue.status !== "open")
-  ) {
-    return res.status(403).json({
-      success: false,
-      message:
-        "You can only update your own open issues",
-    });
-  }
+ 
 
-  const updated =
-    await issueService.updateIssueIntoDB(
-      req.params.id as string,
-      req.body
-    );
+  const updated = await issueService.updateIssueIntoDB(
+    req.params.id as string,
+    req.body,
+  );
 
   res.json({
     success: true,

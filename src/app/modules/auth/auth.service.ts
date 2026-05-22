@@ -14,7 +14,7 @@ const createUser = async (payload: IUser) => {
     VALUES ($1, $2, $3, $4)
     RETURNING id, name, email, role, created_at, updated_at
     `,
-    [name, email, hashPassword, role],
+    [name, email, hashPassword, role || "contributor"],
   );
   delete result.rows[0].password;
   return result.rows[0];
@@ -33,7 +33,7 @@ const loginUser = async (email: string, password: string) => {
   if (!matchPassword) {
     throw new Error("Invalid password");
   }
-  
+
   const jwtPayload = {
     id: user.id,
     name: user.name,
