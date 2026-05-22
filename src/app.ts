@@ -3,15 +3,13 @@ import express, {
   type Request,
   type Response,
 } from "express";
-import globalErrorHandler from "./middleware/globalErrorHandler";
-import { authRoute } from "./modules/auth/auth.route";
-import { issueRoute } from "./modules/issues/issues.route";
+
+import { authRoute } from "./app/modules/auth/auth.route";
+import { issueRoute } from "./app/modules/issues/issues.route";
+import globalErrorHandler from "./app/middleware/globalErrorHandler";
 
 const app: Application = express();
-
-app.use(express.json()); // middlewere json formet
-app.use(express.text()); // middlewere text formet
-app.use(express.urlencoded({ extended: true })); // middlewere urlencoded
+app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
@@ -22,6 +20,6 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/auth", authRoute);
 app.use("/api/issues", issueRoute);
 
-app.use(globalErrorHandler);
+app.use(globalErrorHandler); // Global Error Handler Function
 
 export default app;

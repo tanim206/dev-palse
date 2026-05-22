@@ -1,20 +1,18 @@
-import { pool } from "../../db";
+import { pool } from "../../../db";
 import type { IIssue } from "./issues.interface";
 
-const createIssueIntoDB = async (data: IIssue) => {
+const createIssueIntoDB = async (payload: IIssue) => {
+  const { title, description, type, status, reporter_id } = payload;
+  if (!type) {
+    throw new Error("Invalid type");
+  }
   const result = await pool.query(
     `
     INSERT INTO issues (title, description, type, status, reporter_id)
     VALUES ($1,$2,$3,$4,$5)
     RETURNING *
     `,
-    [
-      data.title,
-      data.description,
-      data.type,
-      data.status || "open",
-      data.reporter_id,
-    ]
+    [title, description, type, status || "open", reporter_id],
   );
 
   return result.rows[0];
@@ -51,35 +49,28 @@ const getAllIssuesFromDB = async (query: any) => {
   const issuesRes = await pool.query(sql, values);
   const issues = issuesRes.rows;
 
-  const ids = [
-    ...new Set(issues.map((i) => i.reporter_id)),
-  ];
+  const ids = [...new Set(issues.map((i) => i.reporter_id))];
 
   const usersRes = await pool.query(
     `SELECT id, name, role FROM users WHERE id = ANY($1)`,
-    [ids]
+    [ids],
   );
 
   return issues.map((issue) => ({
     ...issue,
-    reporter: usersRes.rows.find(
-      (u) => u.id === issue.reporter_id
-    ),
+    reporter: usersRes.rows.find((u) => u.id === issue.reporter_id),
   }));
 };
 
 const getSingleIssueFromDB = async (id: string) => {
-  const issueRes = await pool.query(
-    `SELECT * FROM issues WHERE id=$1`,
-    [id]
-  );
+  const issueRes = await pool.query(`SELECT * FROM issues WHERE id=$1`, [id]);
 
   const issue = issueRes.rows[0];
   if (!issue) return null;
 
   const userRes = await pool.query(
     `SELECT id,name,role FROM users WHERE id=$1`,
-    [issue.reporter_id]
+    [issue.reporter_id],
   );
 
   return {
@@ -88,10 +79,7 @@ const getSingleIssueFromDB = async (id: string) => {
   };
 };
 
-const updateIssueIntoDB = async (
-  id: string,
-  payload: any
-) => {
+const updateIssueIntoDB = async (id: string, payload: any) => {
   const old = await getSingleIssueFromDB(id);
 
   const result = await pool.query(
@@ -111,16 +99,14 @@ const updateIssueIntoDB = async (
       payload.type || old.type,
       payload.status || old.status,
       id,
-    ]
+    ],
   );
 
   return result.rows[0];
 };
 
 const deleteIssueFromDB = async (id: string) => {
-  await pool.query(`DELETE FROM issues WHERE id=$1`, [
-    id,
-  ]);
+  await pool.query(`DELETE FROM issues WHERE id=$1`, [id]);
 
   return true;
 };

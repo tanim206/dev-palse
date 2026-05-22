@@ -4,7 +4,7 @@ const sendResponse = (
   res: Response,
   success: boolean,
   statusCode: number,
-  message: string,
+  message?: string,
   data?: any,
   error?: any,
 ) => {
