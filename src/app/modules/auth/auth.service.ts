@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import config from "../../config";
-import type { IUser } from "./auth.interface";
-import { pool } from "../../../db";
+import config from "../../config/index.js";
+import type { IUser } from "./auth.interface.js";
+import { pool } from "../../../db/index.js";
 
 const createUser = async (payload: IUser) => {
   const { name, email, password, role } = payload;

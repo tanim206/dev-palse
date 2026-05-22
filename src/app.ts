@@ -4,9 +4,9 @@ import express, {
   type Response,
 } from "express";
 
-import { authRoute } from "./app/modules/auth/auth.route";
-import { issueRoute } from "./app/modules/issues/issues.route";
-import globalErrorHandler from "./app/middleware/globalErrorHandler";
+import { authRoute } from "./app/modules/auth/auth.route.js";
+import { issueRoute } from "./app/modules/issues/issues.route.js";
+import globalErrorHandler from "./app/middleware/globalErrorHandler.js";
 
 const app: Application = express();
 app.use(express.json());

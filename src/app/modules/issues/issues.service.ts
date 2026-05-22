@@ -1,5 +1,5 @@
-import { pool } from "../../../db";
-import type { IIssue } from "./issues.interface";
+import { pool } from "../../../db/index.js";
+import type { IIssue } from "./issues.interface.js";
 
 const createIssueIntoDB = async (payload: IIssue) => {
   const { title, description, type, status, reporter_id } = payload;
