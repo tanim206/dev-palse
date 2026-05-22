@@ -18,7 +18,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization;
     if (!token) {
-      return sendResponse(res, false, 401, "Unauthorized");
+      return sendResponse(res, false, 401, "Unauthorized Access");
     }
     const decoded = jwt.verify(token, config.secretKey as string);
     (req as any).user = decoded;
