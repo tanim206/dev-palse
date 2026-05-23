@@ -3,19 +3,6 @@ import type { Request, Response, NextFunction } from "express";
 import config from "../config";
 import sendResponse from "../utils/sendResponse";
 
-export const roleCheck = (...roles: string[]) => {
-  const allowedRoles = roles.length ? roles : ["maintainer"];
-
-  return (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
-
-    if (!user?.role || !allowedRoles.includes(user.role)) {
-      return sendResponse(res, false, 403, "Forbidden");
-    }
-    next();
-  };
-};
-
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.headers.authorization;
@@ -28,4 +15,15 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   } catch {
     return sendResponse(res, false, 401, "Invalid token");
   }
+};
+
+export const roleCheck = (...roles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as any).user;
+
+    if (!roles.includes(user.role)) {
+      return sendResponse(res, false, 403, "Forbidden");
+    }
+    next();
+  };
 };
