@@ -32,7 +32,7 @@ export const dataBase = async () => {
       );
     `);
 
-    console.log("Database connected successfully ");
+    console.log("Database connected successfully");
   } catch (error) {
     console.error("Database initialization failed", error);
   }
